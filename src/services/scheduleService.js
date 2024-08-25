@@ -10,6 +10,15 @@ exports.getAllBlocks = async () => {
 
 exports.createBlock = async (blockData) => {
     try {
+        // Проверяем, существует ли уже такой блок (например, по person и task)
+        const existingBlock = await Schedule.findOne({
+            person: blockData.person,
+            task: blockData.task
+        });
+        if (existingBlock) {
+            throw new Error('Block already exists');
+        }
+
         const schedule = new Schedule({
             person: blockData.person,
             daysOfWeek: Array.isArray(blockData.daysOfWeek) ? blockData.daysOfWeek : [blockData.daysOfWeek],

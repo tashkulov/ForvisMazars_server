@@ -1,10 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const scheduleController = require('../controllers/scheduleController');
+const taskController = require('../controllers/taskController');
+const userController = require('../controllers/userController');
 
-router.get('/', scheduleController.getSchedule);
-router.post('/', scheduleController.createBlock);
-router.put('/:id', scheduleController.updateBlock);
-router.delete('/:id', scheduleController.deleteBlock);
+router.get('/tasks', taskController.getTasks);
+router.post('/tasks', taskController.createTask);
+router.put('/tasks/:id', taskController.updateTask);
+router.delete('/tasks/:id', taskController.deleteTask);
+router.get('/users', userController.getUsers);
+router.post('/users', userController.createUser);
+router.put('/users/:id', userController.updateUser);
+router.delete('/users/:id', userController.deleteUser);
+
 
 module.exports = router;

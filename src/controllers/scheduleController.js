@@ -12,7 +12,6 @@ exports.getSchedule = async (req, res) => {
 
 exports.createBlock = async (req, res) => {
     try {
-        console.log('Request body:', req.body);
         const newBlock = await scheduleService.createBlock(req.body);
         res.status(201).json(newBlock);
     } catch (error) {
