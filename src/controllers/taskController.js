@@ -1,4 +1,6 @@
 const taskService = require('../services/taskService');
+const User = require('../models/UserSchema');
+const Task = require('../models/TaskSchema');
 
 exports.getTasks = async (req, res) => {
     try {
@@ -10,26 +12,29 @@ exports.getTasks = async (req, res) => {
     }
 };
 
-exports.createTask = async (taskData) => {
+exports.createTask = async (req, res) => {
     try {
+        const taskData = req.body; // Получаем данные задачи из тела запроса
         console.log('Creating task with data:', taskData);
 
         // Проверка существования пользователя
         const user = await User.findById(taskData.person);
         if (!user) {
-            throw new Error('User not found');
+            return res.status(404).json({ message: 'User not found' });
         }
 
+        // Создание задачи
         const task = new Task(taskData);
         const savedTask = await task.save();
         console.log('Task created successfully:', savedTask);
 
-        return savedTask;
+        res.status(201).json(savedTask); // Возвращаем созданную задачу
     } catch (error) {
         console.error('Error creating task:', error.message);
-        throw new Error('Error creating task: ' + error.message);
+        res.status(500).json({ message: 'Error creating task' });
     }
 };
+
 exports.updateTask = async (req, res) => {
     try {
         const updatedTask = await taskService.updateTask(req.params.id, req.body);
