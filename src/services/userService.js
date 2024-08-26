@@ -43,18 +43,26 @@ exports.updateUser = async (id, userData) => {
         throw new Error('Error updating user: ' + error.message);
     }
 };
-exports.deleteUser = async (id) => {
+// controllers/userController.js
+exports.deleteUser = async (req, res) => {
+
+    const { id } = req.params;
+
     if (!id) {
-        throw new Error('ID is required');
+        return res.status(400).json({ message: 'ID is required' });
     }
 
     try {
-        const result = await User.deleteOne({ _id: id });
-        if (result.deletedCount === 0) {
-            throw new Error('User not found');
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
-        return true;
+
+        await user.remove();
+
+        res.status(204).end();
     } catch (error) {
-        throw new Error('Error deleting user: ' + error.message);
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Error deleting user: ' + error.message });
     }
 };

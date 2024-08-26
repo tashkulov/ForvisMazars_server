@@ -1,5 +1,6 @@
 const userService = require('../services/userService');
-
+const User = require('../models/UserSchema');
+const Task = require('../models/TaskSchema');
 exports.getUsers = async (req, res) => {
     try {
         const users = await userService.getAllUsers();
@@ -31,9 +32,7 @@ exports.updateUser = async (req, res) => {
         console.error('Error updating user:', error);
         res.status(500).json({ message: 'Error updating user' });
     }
-};
-
-exports.deleteUser = async (req, res) => {
+};exports.deleteUser = async (req, res) => {
     const { id } = req.params;
 
     if (!id) {
@@ -41,13 +40,23 @@ exports.deleteUser = async (req, res) => {
     }
 
     try {
-        const result = await userService.deleteUser(id);
-        if (!result) {
+        // Найти пользователя
+        const user = await User.findById(id);
+        if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
+        await Task.deleteMany({ person: id });
+
+        // Удалить пользователя
+        await User.deleteOne({ _id: id });
+
         res.status(204).end();
     } catch (error) {
         console.error('Error deleting user:', error);
         res.status(500).json({ message: 'Error deleting user: ' + error.message });
     }
 };
+
+
+
